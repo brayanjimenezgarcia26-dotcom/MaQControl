@@ -1,0 +1,134 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#111820">
+    <title>Iniciar sesión | MAQCONTROL</title>
+    <link rel="icon" href="/static/img/Logo.png">
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body class="login-body" data-page="login">
+
+    <main class="login-layout">
+
+        <section class="login-hero">
+            <div class="hero-decoration"></div>
+
+            <div class="hero-brand">
+                <img src="/static/img/Logo.png"
+                     alt="Logo MAQCONTROL">
+                <span>MAQ<span class="accent">CONTROL</span></span>
+            </div>
+
+            <div class="hero-content">
+                <span class="eyebrow">GESTIÓN DE MAQUINARIA PESADA</span>
+
+                <h1>
+                    El control de tu maquinaria
+                    <span>comienza aquí.</span>
+                </h1>
+
+                <p>
+                    Centraliza tus equipos, programa mantenimientos,
+                    registra fallas y consulta la información
+                    que necesitas para tomar mejores decisiones.
+                </p>
+
+                <div class="hero-features">
+                    <div>
+                        <span class="feature-icon">✓</span>
+                        Control de equipos
+                    </div>
+                    <div>
+                        <span class="feature-icon">✓</span>
+                        Mantenimiento planificado
+                    </div>
+                    <div>
+                        <span class="feature-icon">✓</span>
+                        Seguimiento de fallas
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-footer">
+                MAQCONTROL · Plataforma de gestión industrial
+            </div>
+        </section>
+
+        <section class="login-panel">
+            <div class="login-card">
+
+                <div class="mobile-brand">
+                    <img src="/static/img/Logo.png" alt="Logo">
+                    <strong>MAQ<span class="accent">CONTROL</span></strong>
+                </div>
+
+                <div class="login-heading">
+                    <span class="section-kicker">ACCESO AL SISTEMA</span>
+                    <h2>Bienvenido de nuevo</h2>
+                    <p>Ingresa tus credenciales para continuar.</p>
+                </div>
+
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="usuario">Usuario</label>
+                        <input
+                            type="text"
+                            id="usuario"
+                            name="usuario"
+                            placeholder="Ingresa tu usuario"
+                            autocomplete="username"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <div class="password-wrap">
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                placeholder="Ingresa tu contraseña"
+                                autocomplete="current-password"
+                                required
+                            >
+                            <button
+                                type="button"
+                                class="password-toggle"
+                                id="togglePassword"
+                                aria-label="Mostrar contraseña"
+                            >Mostrar</button>
+                        </div>
+                    </div>
+
+                    <div id="loginError" class="form-error"
+                         role="alert" hidden></div>
+
+                    <button type="submit"
+                            class="btn btn-primary btn-full"
+                            id="loginButton">
+                        Ingresar a MAQCONTROL
+                        <span>→</span>
+                    </button>
+                </form>
+
+                <div class="demo-access">
+                    <strong>Acceso de demostración</strong>
+                    <p>Usuario: <code>admin</code></p>
+                    <p>Contraseña: <code>Admin12345!</code></p>
+                </div>
+
+                <p class="login-bottom">
+                    Prototipo académico · 2026-II
+                </p>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
