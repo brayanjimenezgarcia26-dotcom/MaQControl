@@ -160,13 +160,15 @@ async function apiRequest(path, options = {}) {
     let response;
 
     try {
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || "";
         response = await fetch(API + path, {
+            ...options,
             credentials: "same-origin",
             headers: {
                 "Content-Type": "application/json",
+                ...(csrfToken ? { "X-CSRFToken": csrfToken } : {}),
                 ...(options.headers || {})
-            },
-            ...options
+            }
         });
     } catch {
         throw new Error(
@@ -212,40 +214,84 @@ function toast(message, error = false) {
 
 function initializeLogin() {
     const form = document.getElementById("loginForm");
+    const registerForm = document.getElementById("registerForm");
     const toggle = document.getElementById("togglePassword");
     const password = document.getElementById("password");
+    const loginSwitch = document.getElementById("loginSwitch");
+    const showRegister = document.getElementById("showRegister");
+    const showLogin = document.getElementById("showLogin");
+    const heading = document.querySelector(".login-heading h2");
+    const headingText = document.querySelector(".login-heading p");
+
+    const setMode = (registerMode) => {
+        form.hidden = registerMode;
+        registerForm.hidden = !registerMode;
+        loginSwitch.hidden = registerMode;
+        if (heading) heading.textContent = registerMode ? "Crea tu cuenta" : "Bienvenido de nuevo";
+        if (headingText) headingText.textContent = registerMode ? "Comienza gratis. No necesitas tarjeta." : "Ingresa tus credenciales para continuar.";
+        document.getElementById("loginError").hidden = true;
+        document.getElementById("registerError").hidden = true;
+    };
+
+    showRegister?.addEventListener("click", () => setMode(true));
+    showLogin?.addEventListener("click", () => setMode(false));
 
     toggle?.addEventListener("click", () => {
         const visible = password.type === "text";
         password.type = visible ? "password" : "text";
         toggle.textContent = visible ? "Mostrar" : "Ocultar";
+        toggle.setAttribute("aria-label", visible ? "Mostrar contraseña" : "Ocultar contraseña");
     });
 
     form?.addEventListener("submit", async event => {
         event.preventDefault();
-
         const button = document.getElementById("loginButton");
         const error = document.getElementById("loginError");
-
         error.hidden = true;
         button.disabled = true;
         button.textContent = "Verificando acceso...";
-
         try {
             const result = await apiRequest("/login", {
                 method: "POST",
                 body: JSON.stringify({
-                    usuario: document.getElementById("usuario").value,
-                    password: password.value
+                    usuario: document.getElementById("usuario").value.trim(),
+                    password: password.value,
+                    empresa: document.getElementById("empresa")?.value.trim().toLowerCase() || ""
                 })
             });
-
             window.location.href = result.redirect;
         } catch (err) {
             error.textContent = err.message;
             error.hidden = false;
             button.disabled = false;
             button.textContent = "Ingresar a MAQCONTROL →";
+        }
+    });
+
+    registerForm?.addEventListener("submit", async event => {
+        event.preventDefault();
+        const button = document.getElementById("registerButton");
+        const error = document.getElementById("registerError");
+        error.hidden = true;
+        button.disabled = true;
+        button.textContent = "Creando tu cuenta...";
+        try {
+            const result = await apiRequest("/register", {
+                method: "POST",
+                body: JSON.stringify({
+                    empresa: document.getElementById("registerCompany").value.trim(),
+                    correo: document.getElementById("registerEmail").value.trim(),
+                    nombre: document.getElementById("registerName").value.trim(),
+                    usuario: document.getElementById("registerUsername").value.trim(),
+                    password: document.getElementById("registerPassword").value
+                })
+            });
+            window.location.href = result.redirect || "/dashboard";
+        } catch (err) {
+            error.textContent = err.message;
+            error.hidden = false;
+            button.disabled = false;
+            button.textContent = "Crear cuenta gratuita →";
         }
     });
 }
@@ -289,7 +335,7 @@ function renderShell() {
                 </nav>
 
                 <div class="sidebar-footer">
-                    <p>MAQCONTROL · Versión académica</p>
+                    <p>MAQCONTROL · Gestión industrial</p>
                     <p>Gestión y seguimiento de maquinaria</p>
                 </div>
             </aside>
@@ -464,9 +510,14 @@ async function renderDashboard() {
             </a>
         </section>
 
+        ${userInfo?.suscripcion?.plan_codigo === "free" ? `
+            <div class="notice">
+                Plan FREE permanente: ${data.total} de 2 máquinas utilizadas.
+                ${data.total >= 2 ? 'Para ampliar tu capacidad, comunícate al <a href="https://wa.me/51947232206" target="_blank" rel="noopener noreferrer">947232206</a>.' : `Puedes registrar ${2 - data.total} máquina(s) más.`}
+            </div>
+        ` : ""}
         <div class="notice">
-            Los registros iniciales son datos de demostración
-            para presentar y evaluar el prototipo.
+            Mantén el inventario, los mantenimientos y las incidencias de tu empresa organizados en un solo lugar.
         </div>
 
         <section class="stats-grid">
@@ -655,6 +706,7 @@ async function renderModule(module) {
             CONFIG[module].title,
             CONFIG[module].subtitle,
             `
+            ${module === "equipos" ? `<button class="btn btn-outline" id="horometerButton">Registrar horómetro</button>` : ""}
             <button class="btn btn-outline" id="exportButton">
                 ↓ Exportar CSV
             </button>
@@ -707,6 +759,35 @@ async function renderModule(module) {
     document.getElementById("exportButton").onclick = () => {
         window.location.href = `/api/exportar/${module}`;
     };
+
+    if (module === "equipos") {
+        document.getElementById("horometerButton")?.addEventListener("click", async () => {
+            if (!records.length) {
+                toast("Primero registra un equipo.", true);
+                return;
+            }
+            const options = records.map(item => `${item.id} · ${item.codigo} · ${item.nombre}`).join("\n");
+            const selected = window.prompt(`Escribe el ID del equipo:\n${options}`);
+            if (!selected) return;
+            const equipment = records.find(item => item.id === Number(selected.trim()));
+            if (!equipment) {
+                toast("El ID seleccionado no corresponde a un equipo.", true);
+                return;
+            }
+            const reading = window.prompt(`Horómetro actual de ${equipment.codigo}:`, equipment.horometro);
+            if (reading === null) return;
+            try {
+                await apiRequest("/horometro", {
+                    method: "POST",
+                    body: JSON.stringify({ equipo_id: equipment.id, lectura: reading, observacion: "Lectura registrada desde el módulo de equipos" })
+                });
+                toast("Lectura de horómetro guardada.");
+                await renderModule(module);
+            } catch (error) {
+                toast(error.message, true);
+            }
+        });
+    }
 
     document.getElementById("searchInput").oninput = event => {
         const term = event.target.value.toLowerCase().trim();
@@ -1117,8 +1198,10 @@ async function initializeApp() {
         document.getElementById("userName").textContent =
             userInfo.nombre;
 
+        const subscriptionName = userInfo.suscripcion?.plan_nombre || "Sin plan";
+        const companyCode = userInfo.empresa_slug ? ` · Código: ${userInfo.empresa_slug}` : "";
         document.getElementById("userRole").textContent =
-            userInfo.rol;
+            `${userInfo.rol} · ${subscriptionName}${companyCode}`;
 
         if (PAGE === "dashboard") {
             await renderDashboard();

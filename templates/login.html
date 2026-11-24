@@ -3,6 +3,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#111820">
     <title>Iniciar sesión | MAQCONTROL</title>
@@ -73,6 +74,18 @@
 
                 <form id="loginForm">
                     <div class="form-group">
+                        <label for="empresa">Empresa</label>
+                        <input
+                            type="text"
+                            id="empresa"
+                            name="empresa"
+                            placeholder="Identificador de tu empresa"
+                            autocomplete="organization"
+                        >
+                    </div>
+
+                    <div class="form-group">
+
                         <label for="usuario">Usuario</label>
                         <input
                             type="text"
@@ -115,14 +128,44 @@
                     </button>
                 </form>
 
-                <div class="demo-access">
-                    <strong>Acceso de demostración</strong>
-                    <p>Usuario: <code>admin</code></p>
-                    <p>Contraseña: <code>Admin12345!</code></p>
-                </div>
+                <p class="auth-switch" id="loginSwitch">
+                    ¿Primera vez en MAQCONTROL?
+                    <button type="button" class="text-link" id="showRegister">Crear cuenta gratis</button>
+                </p>
+
+                <form id="registerForm" hidden>
+                    <div class="register-plan-note">
+                        <strong>Empieza gratis con MAQCONTROL</strong>
+                        <span>Registra hasta 2 máquinas. Sin tarjeta y sin vencimiento.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerCompany">Nombre de la empresa</label>
+                        <input type="text" id="registerCompany" name="empresa" maxlength="160" placeholder="Ej. Constructora Andina SAC" autocomplete="organization" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerEmail">Correo electrónico</label>
+                        <input type="email" id="registerEmail" name="correo" maxlength="180" placeholder="empresa@correo.com" autocomplete="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerName">Nombre del administrador</label>
+                        <input type="text" id="registerName" name="nombre" maxlength="160" placeholder="Tu nombre completo" autocomplete="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerUsername">Usuario</label>
+                        <input type="text" id="registerUsername" name="usuario" minlength="3" maxlength="100" pattern="[A-Za-z0-9._-]{3,100}" placeholder="Crea tu usuario" autocomplete="username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="registerPassword">Contraseña (mínimo 12 caracteres)</label>
+                        <input type="password" id="registerPassword" name="password" minlength="12" autocomplete="new-password" placeholder="Crea una contraseña segura" required>
+                    </div>
+                    <div id="registerError" class="form-error" role="alert" hidden></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="registerButton">Crear cuenta gratuita <span>→</span></button>
+                    <p class="auth-switch">¿Ya tienes una cuenta? <button type="button" class="text-link" id="showLogin">Iniciar sesión</button></p>
+                </form>
 
                 <p class="login-bottom">
-                    Prototipo académico · 2026-II
+                    ¿Necesitas más capacidad o información comercial?<br>
+                    <a href="https://wa.me/51947232206" target="_blank" rel="noopener noreferrer">WhatsApp MAQCONTROL · 947232206</a>
                 </p>
             </div>
         </section>

@@ -354,6 +354,39 @@ textarea:focus-visible {
     font-size: 12px;
 }
 
+
+/* REGISTRO Y CONTACTO COMERCIAL */
+.auth-switch {
+    margin-top: 18px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+.text-link {
+    border: 0;
+    background: transparent;
+    color: var(--yellow-dark);
+    font-weight: 800;
+    margin-left: 4px;
+}
+.text-link:hover { text-decoration: underline; }
+.register-plan-note {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border: 1px solid #cfe9df;
+    border-radius: 12px;
+    background: #f0faf6;
+    color: #176b50;
+    font-size: 13px;
+}
+.register-plan-note span { color: #527568; font-size: 12px; line-height: 1.5; }
+.login-bottom a { color: var(--yellow-dark); font-weight: 800; display: inline-block; margin-top: 7px; }
+#registerForm .form-group { margin-bottom: 14px; }
+#registerForm .form-group input { min-height: 44px; }
+
 /* BOTONES */
 
 .btn {
@@ -1225,3 +1258,8 @@ textarea:focus-visible {
         flex: 1;
     }
 }
+:focus-visible{outline:3px solid var(--yellow);outline-offset:3px}
+button:disabled,.btn:disabled{opacity:.55;cursor:not-allowed}
+input:focus,select:focus,textarea:focus{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(255,190,0,.16)}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media print{.sidebar,.topbar,.page-actions,.menu-toggle,.overlay{display:none!important}.main-area{margin:0!important}.content{padding:0!important}.panel,.stat-card{box-shadow:none!important;break-inside:avoid}}
